@@ -363,6 +363,54 @@ app.get('/api/admin/agendamentos', autenticarAdmin, (req, res) => {
   res.json(agendamentos);
 });
 
+// POST /api/admin/agendamentos -> cria um agendamento manualmente (ex: reagendar
+// um cliente por fora, sem passar pelo checkout do Mercado Pago). Entra direto
+// como "confirmado", ja que o administrador esta combinando isso manualmente.
+app.post('/api/admin/agendamentos', autenticarAdmin, (req, res) => {
+  const { servicoId, data, horario, nome, contato, observacoes } = req.body || {};
+
+  if (!servicoId || !data || !horario || !nome || !contato) {
+    return res.status(400).json({ erro: 'Preencha todos os campos obrigatorios.' });
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || !/^\d{2}:\d{2}$/.test(horario)) {
+    return res.status(400).json({ erro: 'Data ou horario em formato invalido.' });
+  }
+
+  const servicos = lerJSON(SERVICOS_PATH);
+  const servico = servicos.find((s) => s.id === servicoId);
+  if (!servico) {
+    return res.status(400).json({ erro: 'Servico invalido.' });
+  }
+
+  const agendamentos = expirarPendentesAntigos(lerJSON(AGENDAMENTOS_PATH));
+
+  const conflito = agendamentos.find((a) => a.data === data && a.horario === horario && ocupaSlot(a));
+  if (conflito) {
+    return res.status(409).json({ erro: 'Ja existe um agendamento nesse horario.' });
+  }
+
+  const novoAgendamento = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    servicoId,
+    servicoNome: servico.nome,
+    preco: servico.preco,
+    data,
+    horario,
+    nome: String(nome).trim(),
+    contato: String(contato).trim(),
+    observacoes: observacoes ? String(observacoes).trim() : '',
+    status: 'confirmado',
+    pagamentoId: 'manual',
+    criadoEm: new Date().toISOString()
+  };
+
+  agendamentos.push(novoAgendamento);
+  salvarJSON(AGENDAMENTOS_PATH, agendamentos);
+
+  res.status(201).json({ agendamento: novoAgendamento });
+});
+
 // DELETE /api/admin/agendamentos/:id -> cancela um agendamento (protegida por senha)
 app.delete('/api/admin/agendamentos/:id', autenticarAdmin, (req, res) => {
   let agendamentos = lerJSON(AGENDAMENTOS_PATH);
