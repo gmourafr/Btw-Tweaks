@@ -9,15 +9,48 @@
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-  .admin-wrap { max-width: 880px; margin: 0 auto; padding: 64px 24px; }
+  .admin-wrap { max-width: 920px; margin: 0 auto; padding: 56px 24px; }
   .login-box { max-width: 360px; margin: 80px auto; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 32px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 14px; }
-  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--border); }
-  th { font-family: var(--font-label); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 600; }
-  td.mono { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
-  .btn-cancelar { background: none; border: 1px solid var(--border-strong); color: var(--warn); border-radius: 6px; padding: 6px 10px; font-size: 12px; }
-  .btn-cancelar:hover { border-color: var(--warn); }
-  .vazio { color: var(--text-faint); margin-top: 24px; }
+
+  .admin-topo { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+  .admin-contador { font-family: var(--font-mono); font-size: 13px; color: var(--text-faint); }
+
+  .filtros { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+  .filtro-btn { background: var(--bg-elevated); border: 1px solid var(--border-strong); color: var(--text-muted); border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; }
+  .filtro-btn:hover { border-color: var(--border-strong); color: var(--text); }
+  .filtro-btn.ativo { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+
+  .agendamento-card { background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 24px 26px; margin-bottom: 16px; }
+
+  .card-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+
+  .card-quando { font-family: var(--font-display); font-size: 22px; color: var(--text); line-height: 1.2; }
+  .card-servico { font-family: var(--font-label); font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--blue); margin-top: 4px; }
+
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .status-pill.confirmado { background: var(--blue-soft); color: var(--blue); }
+  .status-pill.pendente_pagamento { background: rgba(217, 119, 87, 0.12); color: var(--warn); }
+  .status-pill.cancelado, .status-pill.expirado { background: rgba(255,255,255,0.05); color: var(--text-faint); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  .card-dados { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 32px; padding: 18px 0; border-top: 1px solid var(--border); }
+
+  .dado-label { font-family: var(--font-label); font-weight: 600; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 5px; }
+  .dado-valor { font-size: 15px; color: var(--text); }
+  .dado-valor.mono { font-family: var(--font-mono); font-size: 14px; }
+
+  .card-observacoes { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 2px; }
+  .obs-texto { font-size: 14px; color: var(--text-muted); line-height: 1.6; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 6px; white-space: pre-wrap; }
+
+  .card-acoes { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .btn-cancelar { background: none; border: 1px solid var(--border-strong); color: var(--warn); border-radius: var(--radius-sm); padding: 9px 16px; font-size: 13px; font-weight: 600; }
+  .btn-cancelar:hover { border-color: var(--warn); background: rgba(217, 119, 87, 0.08); }
+
+  .vazio { color: var(--text-faint); margin-top: 24px; font-size: 15px; }
+
+  @media (max-width: 560px) {
+    .card-dados { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -36,8 +69,21 @@
 </div>
 
 <div class="admin-wrap" id="telaPainel" style="display:none;">
-  <p class="eyebrow">Painel</p>
-  <h2 style="font-size:26px;">Agendamentos</h2>
+  <div class="admin-topo">
+    <div>
+      <p class="eyebrow" style="margin-bottom:6px;">Painel</p>
+      <h2 style="font-size:28px;">Agendamentos</h2>
+    </div>
+    <span class="admin-contador" id="contador"></span>
+  </div>
+
+  <div class="filtros" id="filtros">
+    <button class="filtro-btn ativo" data-filtro="todos">Todos</button>
+    <button class="filtro-btn" data-filtro="confirmado">Pagos</button>
+    <button class="filtro-btn" data-filtro="pendente_pagamento">Aguardando</button>
+    <button class="filtro-btn" data-filtro="cancelado_expirado">Cancelados</button>
+  </div>
+
   <div id="tabelaContainer"></div>
 </div>
 

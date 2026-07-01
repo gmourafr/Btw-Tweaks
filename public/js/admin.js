@@ -4,13 +4,27 @@ const senhaInput = document.getElementById('senhaAdmin');
 const btnEntrar = document.getElementById('btnEntrar');
 const loginMsg = document.getElementById('loginMsg');
 const tabelaContainer = document.getElementById('tabelaContainer');
+const contador = document.getElementById('contador');
+const filtros = document.getElementById('filtros');
 
 let senhaAtual = sessionStorage.getItem('btw_admin_senha') || '';
+let agendamentosAtuais = [];
+let filtroAtivo = 'todos';
 
 senhaInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') tentarEntrar();
 });
 btnEntrar.addEventListener('click', tentarEntrar);
+
+filtros.addEventListener('click', (e) => {
+  const btn = e.target.closest('.filtro-btn');
+  if (!btn) return;
+
+  filtroAtivo = btn.dataset.filtro;
+  filtros.querySelectorAll('.filtro-btn').forEach((b) => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  renderizarCards(agendamentosAtuais);
+});
 
 async function tentarEntrar() {
   const senha = senhaInput.value.trim();
@@ -36,8 +50,8 @@ async function carregarAgendamentos(senha) {
 
     if (!resp.ok) return false;
 
-    const agendamentos = await resp.json();
-    renderizarTabela(agendamentos);
+    agendamentosAtuais = await resp.json();
+    renderizarCards(agendamentosAtuais);
     return true;
   } catch (erro) {
     return false;
@@ -46,51 +60,92 @@ async function carregarAgendamentos(senha) {
 
 function rotuloStatus(status) {
   const mapa = {
-    confirmado: { texto: 'Pago', cor: 'var(--blue)' },
-    pendente_pagamento: { texto: 'Aguardando pagamento', cor: 'var(--warn)' },
-    cancelado: { texto: 'Cancelado', cor: 'var(--text-faint)' },
-    expirado: { texto: 'Expirado', cor: 'var(--text-faint)' }
+    confirmado: 'Pago',
+    pendente_pagamento: 'Aguardando pagamento',
+    cancelado: 'Cancelado',
+    expirado: 'Expirado'
   };
-  const info = mapa[status] || { texto: status, cor: 'var(--text-faint)' };
-  return `<span style="color:${info.cor};font-family:var(--font-mono);font-size:12px;">${info.texto}</span>`;
+  return mapa[status] || status;
 }
 
-function renderizarTabela(agendamentos) {
+function formatarData(iso) {
+  const [ano, mes, dia] = iso.split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
+function escapeHtml(texto) {
+  const div = document.createElement('div');
+  div.textContent = texto;
+  return div.innerHTML;
+}
+
+function passaNoFiltro(a) {
+  if (filtroAtivo === 'todos') return true;
+  if (filtroAtivo === 'cancelado_expirado') return a.status === 'cancelado' || a.status === 'expirado';
+  return a.status === filtroAtivo;
+}
+
+function renderizarCards(agendamentos) {
+  const visiveis = agendamentos.filter(passaNoFiltro);
+
+  contador.textContent =
+    agendamentos.length === 0 ? '' : `${visiveis.length} de ${agendamentos.length} agendamento${agendamentos.length === 1 ? '' : 's'}`;
+
   if (agendamentos.length === 0) {
     tabelaContainer.innerHTML = '<p class="vazio">Nenhum agendamento ainda.</p>';
     return;
   }
 
-  const linhas = agendamentos
-    .map(
-      (a) => `
-      <tr data-id="${a.id}">
-        <td class="mono">${a.data} ${a.horario}</td>
-        <td>${a.servicoNome}</td>
-        <td>${a.nome}</td>
-        <td class="mono">${a.contato}</td>
-        <td>${rotuloStatus(a.status)}</td>
-        <td><button class="btn-cancelar" onclick="cancelarAgendamento('${a.id}')">Cancelar</button></td>
-      </tr>
-    `
-    )
-    .join('');
+  if (visiveis.length === 0) {
+    tabelaContainer.innerHTML = '<p class="vazio">Nenhum agendamento nesse filtro.</p>';
+    return;
+  }
 
-  tabelaContainer.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Quando</th>
-          <th>Serviço</th>
-          <th>Nome</th>
-          <th>Contato</th>
-          <th>Pagamento</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>${linhas}</tbody>
-    </table>
-  `;
+  tabelaContainer.innerHTML = visiveis
+    .map((a) => {
+      const observacoesHtml = a.observacoes
+        ? `
+        <div class="card-observacoes">
+          <span class="dado-label">Observações do cliente</span>
+          <div class="obs-texto">${escapeHtml(a.observacoes)}</div>
+        </div>
+      `
+        : '';
+
+      const podeCancel = a.status === 'confirmado' || a.status === 'pendente_pagamento';
+
+      return `
+        <div class="agendamento-card" data-id="${a.id}">
+          <div class="card-topo">
+            <div>
+              <div class="card-quando">${formatarData(a.data)} às ${a.horario}</div>
+              <div class="card-servico">${escapeHtml(a.servicoNome)}</div>
+            </div>
+            <span class="status-pill ${a.status}"><span class="status-dot"></span>${rotuloStatus(a.status)}</span>
+          </div>
+
+          <div class="card-dados">
+            <div>
+              <div class="dado-label">Nome</div>
+              <div class="dado-valor">${escapeHtml(a.nome)}</div>
+            </div>
+            <div>
+              <div class="dado-label">WhatsApp / Discord</div>
+              <div class="dado-valor mono">${escapeHtml(a.contato)}</div>
+            </div>
+          </div>
+
+          ${observacoesHtml}
+
+          ${
+            podeCancel
+              ? `<div class="card-acoes"><button class="btn-cancelar" onclick="cancelarAgendamento('${a.id}')">Cancelar agendamento</button></div>`
+              : ''
+          }
+        </div>
+      `;
+    })
+    .join('');
 }
 
 async function cancelarAgendamento(id) {
