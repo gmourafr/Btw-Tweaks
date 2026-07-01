@@ -62,6 +62,11 @@ app.use('/api/horarios', limiteGeral);
 app.use('/api/admin', limiteAdmin);
 
 app.use(express.json());
+
+// Qualquer acesso a /index.html (ex: link antigo, favorito salvo) redireciona
+// pra raiz, pra URL nunca aparecer feia com o nome do arquivo na barra.
+app.get('/index.html', (req, res) => res.redirect(301, '/'));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 function lerJSON(caminho) {
