@@ -1,0 +1,30 @@
+[
+  {
+    "id": "otimizacao-completa",
+    "nome": "Otimização completa",
+    "descricao": "Ajuste geral do Windows: prioridade de processos, plano de energia, limpeza de bloatware e serviços desnecessários rodando em segundo plano.",
+    "duracaoMin": 60,
+    "preco": 80
+  },
+  {
+    "id": "configuracao-rede",
+    "nome": "Configuração de rede",
+    "descricao": "Redução de ping e jitter, ajuste de DNS, QoS e prioridade de tráfego de rede para os seus jogos.",
+    "duracaoMin": 45,
+    "preco": 60
+  },
+  {
+    "id": "setup-gamer",
+    "nome": "Setup gamer do zero",
+    "descricao": "Instalação e configuração de drivers, sensibilidade, overlays e configs recomendadas para o seu jogo principal.",
+    "duracaoMin": 60,
+    "preco": 90
+  },
+  {
+    "id": "manutencao-preventiva",
+    "nome": "Manutenção preventiva",
+    "descricao": "Revisão geral do sistema, atualização de drivers e limpeza de arquivos temporários acumulados.",
+    "duracaoMin": 30,
+    "preco": 45
+  }
+]

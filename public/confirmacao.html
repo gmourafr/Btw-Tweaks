@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmação — BTW Tweaks</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .confirmacao-wrap { max-width: 480px; margin: 0 auto; padding: 96px 24px; text-align: center; }
+  .status-badge { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; margin-bottom: 24px; font-family: var(--font-display); font-size: 24px; }
+  .status-badge.ok { background: var(--blue-soft); color: var(--blue); }
+  .status-badge.espera { background: rgba(217, 119, 87, 0.12); color: var(--warn); }
+  .status-badge.erro { background: rgba(217, 119, 87, 0.12); color: var(--warn); }
+  .confirmacao-detalhe { margin-top: 28px; padding: 20px; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius); font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); text-align: left; display: none; }
+</style>
+</head>
+<body>
+
+<div class="confirmacao-wrap">
+  <a href="index.html" class="logo">BTW<span>TWEAKS</span></a>
+
+  <div style="margin-top:40px;">
+    <div class="status-badge espera" id="statusBadge">…</div>
+    <h2 id="statusTitulo" style="font-size:24px;">Verificando seu pagamento...</h2>
+    <p id="statusTexto">Isso leva só alguns segundos.</p>
+
+    <div class="confirmacao-detalhe" id="detalhe"></div>
+
+    <div style="margin-top:32px;">
+      <a href="index.html" class="btn btn-secondary">Voltar para o site</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/confirmacao.js"></script>
+</body>
+</html>

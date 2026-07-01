@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel — BTW Tweaks</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .admin-wrap { max-width: 880px; margin: 0 auto; padding: 64px 24px; }
+  .login-box { max-width: 360px; margin: 80px auto; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 32px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--border); }
+  th { font-family: var(--font-label); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 600; }
+  td.mono { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
+  .btn-cancelar { background: none; border: 1px solid var(--border-strong); color: var(--warn); border-radius: 6px; padding: 6px 10px; font-size: 12px; }
+  .btn-cancelar:hover { border-color: var(--warn); }
+  .vazio { color: var(--text-faint); margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<div class="admin-wrap" id="telaLogin">
+  <div class="login-box">
+    <p class="eyebrow">Acesso restrito</p>
+    <h2 style="font-size:22px;">Painel BTW Tweaks</h2>
+    <div class="campo" style="margin-top:20px;">
+      <label for="senhaAdmin">Senha</label>
+      <input type="password" id="senhaAdmin" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" id="btnEntrar" style="width:100%;">Entrar</button>
+    <div class="form-msg" id="loginMsg"></div>
+  </div>
+</div>
+
+<div class="admin-wrap" id="telaPainel" style="display:none;">
+  <p class="eyebrow">Painel</p>
+  <h2 style="font-size:26px;">Agendamentos</h2>
+  <div id="tabelaContainer"></div>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
