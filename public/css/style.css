@@ -13,8 +13,10 @@
   --warn: #d97757;
   --radius: 14px;
   --radius-sm: 8px;
-  --font-display: 'Russo One', sans-serif;
-  --font-label: 'Rajdhani', sans-serif;
+  --font-display: 'Sora', sans-serif;
+  --font-label: 'Inter', sans-serif;
+  --font-logo-primary: 'Russo One', sans-serif;
+  --font-logo-secondary: 'Rajdhani', sans-serif;
   --font-body: 'Manrope', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --maxw: 1140px;
@@ -65,7 +67,7 @@ a {
 
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.15;
   margin: 0;
 }
@@ -153,7 +155,7 @@ header {
 }
 
 .logo {
-  font-family: var(--font-display);
+  font-family: var(--font-logo-primary);
   font-size: 20px;
   color: var(--blue);
   text-decoration: none;
@@ -164,7 +166,7 @@ header {
 
 .logo span {
   color: var(--text);
-  font-family: var(--font-label);
+  font-family: var(--font-logo-secondary);
   font-weight: 600;
   font-size: 12px;
   letter-spacing: 3px;
@@ -397,6 +399,7 @@ header {
 .credencial-numero {
   display: block;
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 22px;
   color: var(--blue);
   margin-bottom: 8px;
@@ -495,6 +498,7 @@ section {
 
 .processo-num {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 34px;
   color: var(--blue-deep);
   display: block;
@@ -530,9 +534,9 @@ section {
   font-family: var(--font-label);
   font-weight: 600;
   font-size: 12px;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #c7cbd4;
   margin-bottom: 8px;
 }
 
