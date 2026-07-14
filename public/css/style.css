@@ -256,6 +256,7 @@ header {
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(55, 138, 221, 0.06);
 }
 
 .terminal-bar {
@@ -354,6 +355,61 @@ header {
   opacity: 1;
 }
 
+/* ---------- Quem somos ---------- */
+
+.sobre-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.sobre-paragrafo {
+  font-size: 15px;
+  line-height: 1.75;
+  margin: 0 0 16px;
+}
+
+.sobre-paragrafo:last-child {
+  margin-bottom: 0;
+}
+
+.credenciais {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.credencial-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.credencial-item:hover {
+  border-color: var(--blue);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(55, 138, 221, 0.14);
+}
+
+.credencial-numero {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--blue);
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.credencial-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* ---------- Secoes genericas ---------- */
 
 section {
@@ -374,16 +430,21 @@ section {
 .servicos-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
+  gap: 20px;
 }
 
 .servico-card {
   background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
   padding: 28px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.servico-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(55, 138, 221, 0.14);
 }
 
 .servico-card h3 {
@@ -415,12 +476,21 @@ section {
 .processo {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  gap: 20px;
 }
 
 .processo-item {
-  border-top: 1px solid var(--border-strong);
-  padding-top: 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 26px 24px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.processo-item:hover {
+  border-color: var(--blue);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(55, 138, 221, 0.14);
 }
 
 .processo-num {
@@ -448,6 +518,7 @@ section {
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 36px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
 }
 
 .campo {
@@ -697,6 +768,12 @@ section {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease;
+}
+
+.faq-item summary:hover {
+  color: var(--blue);
 }
 
 .faq-item summary::-webkit-details-marker {
@@ -806,8 +883,13 @@ footer {
 
   .servicos-grid,
   .processo,
-  .campo-grid {
+  .campo-grid,
+  .sobre-grid {
     grid-template-columns: 1fr;
+  }
+
+  .credenciais {
+    grid-template-columns: 1fr 1fr;
   }
 
   .nav-links {
