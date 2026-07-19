@@ -434,13 +434,17 @@ section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+  align-items: stretch;
 }
 
 .servico-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  padding: 28px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -450,28 +454,111 @@ section {
   box-shadow: 0 14px 32px rgba(55, 138, 221, 0.14);
 }
 
+.servico-card.destaque {
+  border-color: var(--blue);
+  background: linear-gradient(180deg, rgba(55, 138, 221, 0.08) 0%, var(--bg-elevated) 140px);
+  box-shadow: 0 20px 48px rgba(55, 138, 221, 0.16);
+}
+
+.servico-card.destaque:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 26px 56px rgba(55, 138, 221, 0.24);
+}
+
+.servico-badge {
+  position: absolute;
+  top: -13px;
+  left: 32px;
+  background: var(--blue);
+  color: #04101d;
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
 .servico-card h3 {
-  font-size: 18px;
+  font-size: 21px;
   color: var(--text);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.servico-card p {
+.servico-tagline {
   font-size: 14px;
-  margin: 0 0 18px;
+  margin: 0 0 22px;
+  line-height: 1.5;
 }
 
-.servico-meta {
+.servico-preco {
   display: flex;
-  gap: 18px;
+  align-items: baseline;
+  gap: 3px;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.servico-preco-moeda {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--blue);
+  align-self: flex-start;
+  margin-top: 6px;
+}
+
+.servico-preco-valor {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 46px;
+  color: var(--text);
+  line-height: 1;
+}
+
+.servico-preco-centavos {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--text-muted);
+}
+
+.servico-preco-duracao {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--text-faint);
+  margin-left: auto;
+  align-self: center;
 }
 
-.servico-meta strong {
+.servico-itens {
+  list-style: none;
+  margin: 0 0 26px;
+  padding: 0;
+  flex-grow: 1;
+}
+
+.servico-itens li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 7px 0;
+}
+
+.servico-itens li svg {
+  flex-shrink: 0;
   color: var(--blue);
-  font-weight: 500;
+  margin-top: 2px;
+}
+
+.servico-cta {
+  width: 100%;
+  padding: 13px 20px;
+  font-size: 14px;
 }
 
 /* ---------- Como funciona ---------- */

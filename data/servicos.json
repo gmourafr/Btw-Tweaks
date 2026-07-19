@@ -2,15 +2,29 @@
   {
     "id": "otimizacao-windows",
     "nome": "Otimização Windows",
-    "descricao": "Ajuste geral do Windows: prioridade de processos, plano de energia, limpeza de bloatware e serviços desnecessários rodando em segundo plano.",
+    "descricao": "Ajuste geral do Windows para tirar o máximo do seu hardware atual.",
+    "itens": [
+      "Ajuste de prioridade de processos",
+      "Otimização do plano de energia",
+      "Limpeza de bloatware",
+      "Remoção de serviços desnecessários em segundo plano"
+    ],
     "duracaoMin": 60,
-    "preco": 49.99
+    "preco": 49.99,
+    "destaque": false
   },
   {
     "id": "otimizacao-completa",
     "nome": "Otimização Completa",
-    "descricao": "Instalação de Windows personalizado, configuração de drivers, configuração de rede e configs recomendadas para o seu jogo principal.",
+    "descricao": "O pacote mais completo, do zero ao setup pronto pra competir.",
+    "itens": [
+      "Instalação de Windows personalizado",
+      "Configuração de drivers",
+      "Configuração de rede",
+      "Configs recomendadas para o seu jogo principal"
+    ],
     "duracaoMin": 90,
-    "preco": 89.99
+    "preco": 89.99,
+    "destaque": true
   }
 ]

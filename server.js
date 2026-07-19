@@ -22,6 +22,7 @@ const mpClient = MP_ACCESS_TOKEN ? new MercadoPagoConfig({ accessToken: MP_ACCES
 
 const SERVICOS_PATH = path.join(__dirname, 'data', 'servicos.json');
 const AGENDAMENTOS_PATH = path.join(__dirname, 'data', 'agendamentos.json');
+const BLOQUEIOS_PATH = path.join(__dirname, 'data', 'bloqueios.json');
 
 // Horario de funcionamento: 09h as 21h, segunda a sabado
 const HORA_INICIO = 9;
@@ -140,6 +141,14 @@ function diaDaSemana(dataISO) {
   return new Date(dataISO + 'T12:00:00Z').getUTCDay();
 }
 
+// Le a lista de horarios bloqueados manualmente pelo administrador.
+// Cada bloqueio nao tem relacao com agendamentos -- e so uma trava pra
+// impedir novas reservas naquele horario especifico.
+function lerBloqueios() {
+  if (!fs.existsSync(BLOQUEIOS_PATH)) return [];
+  return lerJSON(BLOQUEIOS_PATH);
+}
+
 // GET /api/servicos -> lista os servicos oferecidos
 app.get('/api/servicos', (req, res) => {
   res.json(lerJSON(SERVICOS_PATH));
@@ -185,7 +194,11 @@ app.get('/api/horarios', (req, res) => {
     .filter((a) => a.data === data && ocupaSlot(a))
     .map((a) => a.horario);
 
-  horarios = horarios.filter((h) => !ocupados.includes(h));
+  const bloqueados = lerBloqueios()
+    .filter((b) => b.data === data)
+    .map((b) => b.horario);
+
+  horarios = horarios.filter((h) => !ocupados.includes(h) && !bloqueados.includes(h));
 
   res.json({ horarios });
 });
@@ -217,6 +230,11 @@ app.post('/api/agendamentos', async (req, res) => {
   const conflito = agendamentos.find((a) => a.data === data && a.horario === horario && ocupaSlot(a));
   if (conflito) {
     return res.status(409).json({ erro: 'Esse horario acabou de ser reservado por outra pessoa. Escolha outro horario.' });
+  }
+
+  const bloqueado = lerBloqueios().find((b) => b.data === data && b.horario === horario);
+  if (bloqueado) {
+    return res.status(409).json({ erro: 'Esse horario nao esta disponivel. Escolha outro horario.' });
   }
 
   const novoAgendamento = {
@@ -427,6 +445,86 @@ app.delete('/api/admin/agendamentos/:id', autenticarAdmin, (req, res) => {
   }
 
   salvarJSON(AGENDAMENTOS_PATH, agendamentos);
+  res.json({ ok: true });
+});
+
+// GET /api/admin/dia-horarios?data=YYYY-MM-DD -> visao completa do dia:
+// cada horario do expediente com seu status (livre, ocupado ou bloqueado),
+// usada pela tela de "Bloquear horários" do painel.
+app.get('/api/admin/dia-horarios', autenticarAdmin, (req, res) => {
+  const { data } = req.query;
+
+  if (!data || !/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    return res.status(400).json({ erro: 'Informe uma data valida (YYYY-MM-DD).' });
+  }
+
+  const agendamentos = expirarPendentesAntigos(lerJSON(AGENDAMENTOS_PATH)).filter(
+    (a) => a.data === data && ocupaSlot(a)
+  );
+  const bloqueios = lerBloqueios().filter((b) => b.data === data);
+
+  const horarios = gerarHorariosBase().map((horario) => {
+    const agendamento = agendamentos.find((a) => a.horario === horario);
+    if (agendamento) {
+      return { horario, status: 'ocupado', nome: agendamento.nome };
+    }
+
+    const bloqueio = bloqueios.find((b) => b.horario === horario);
+    if (bloqueio) {
+      return { horario, status: 'bloqueado', bloqueioId: bloqueio.id };
+    }
+
+    return { horario, status: 'livre' };
+  });
+
+  res.json({ horarios });
+});
+
+// POST /api/admin/bloqueios -> bloqueia um horario especifico, impedindo
+// que apareca como disponivel pra novos agendamentos.
+app.post('/api/admin/bloqueios', autenticarAdmin, (req, res) => {
+  const { data, horario } = req.body || {};
+
+  if (!data || !horario || !/^\d{4}-\d{2}-\d{2}$/.test(data) || !/^\d{2}:\d{2}$/.test(horario)) {
+    return res.status(400).json({ erro: 'Data ou horario em formato invalido.' });
+  }
+
+  const agendamentos = expirarPendentesAntigos(lerJSON(AGENDAMENTOS_PATH));
+  const ocupado = agendamentos.find((a) => a.data === data && a.horario === horario && ocupaSlot(a));
+  if (ocupado) {
+    return res.status(409).json({ erro: 'Esse horario ja tem um agendamento. Cancele-o antes de bloquear o horario.' });
+  }
+
+  const bloqueios = lerBloqueios();
+  const jaBloqueado = bloqueios.find((b) => b.data === data && b.horario === horario);
+  if (jaBloqueado) {
+    return res.status(409).json({ erro: 'Esse horario ja esta bloqueado.' });
+  }
+
+  const novoBloqueio = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    data,
+    horario,
+    criadoEm: new Date().toISOString()
+  };
+
+  bloqueios.push(novoBloqueio);
+  salvarJSON(BLOQUEIOS_PATH, bloqueios);
+
+  res.status(201).json({ bloqueio: novoBloqueio });
+});
+
+// DELETE /api/admin/bloqueios/:id -> libera um horario bloqueado anteriormente
+app.delete('/api/admin/bloqueios/:id', autenticarAdmin, (req, res) => {
+  let bloqueios = lerBloqueios();
+  const tamanhoAntes = bloqueios.length;
+  bloqueios = bloqueios.filter((b) => b.id !== req.params.id);
+
+  if (bloqueios.length === tamanhoAntes) {
+    return res.status(404).json({ erro: 'Bloqueio nao encontrado.' });
+  }
+
+  salvarJSON(BLOQUEIOS_PATH, bloqueios);
   res.json({ ok: true });
 });
 

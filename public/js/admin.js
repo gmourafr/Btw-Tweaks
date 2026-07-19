@@ -559,3 +559,217 @@ if (senhaAtual) {
     }
   });
 }
+
+// ==================== Modal: bloquear horarios ====================
+
+const modalBloqueioOverlay = document.getElementById('modalBloqueioOverlay');
+const btnBloquearHorarios = document.getElementById('btnBloquearHorarios');
+const modalBloqueioFechar = document.getElementById('modalBloqueioFechar');
+const bloqDataBtn = document.getElementById('bloqDataBtn');
+const bloqDataTexto = document.getElementById('bloqDataTexto');
+const bloqDatePopover = document.getElementById('bloqDatePopover');
+const bloqDateGrid = document.getElementById('bloqDateGrid');
+const bloqMesAtualLabel = document.getElementById('bloqMesAtualLabel');
+const bloqMesAnterior = document.getElementById('bloqMesAnterior');
+const bloqMesProximo = document.getElementById('bloqMesProximo');
+const bloqSlotsContainer = document.getElementById('bloqSlotsContainer');
+const bloqSlotsMsg = document.getElementById('bloqSlotsMsg');
+const bloqFormMsg = document.getElementById('bloqFormMsg');
+
+let bloqDataSelecionada = '';
+let bloqMesExibido = hojeModal.getMonth();
+let bloqAnoExibido = hojeModal.getFullYear();
+
+btnBloquearHorarios.addEventListener('click', abrirModalBloqueio);
+modalBloqueioFechar.addEventListener('click', fecharModalBloqueio);
+modalBloqueioOverlay.addEventListener('click', (e) => {
+  if (e.target === modalBloqueioOverlay) fecharModalBloqueio();
+});
+
+function abrirModalBloqueio() {
+  modalBloqueioOverlay.hidden = false;
+  bloqFormMsg.className = 'form-msg';
+  bloqFormMsg.textContent = '';
+  bloqDataSelecionada = '';
+  bloqDataTexto.textContent = 'Escolha uma data';
+  bloqDataTexto.classList.remove('preenchido');
+  bloqSlotsContainer.innerHTML = '';
+  bloqSlotsMsg.textContent = 'Selecione uma data para ver os horários.';
+  bloqSlotsMsg.style.display = 'block';
+}
+
+function fecharModalBloqueio() {
+  modalBloqueioOverlay.hidden = true;
+}
+
+function renderizarCalendarioBloqueio() {
+  bloqMesAtualLabel.textContent = `${MESES[bloqMesExibido]} ${bloqAnoExibido}`;
+
+  const primeiroDiaSemana = new Date(bloqAnoExibido, bloqMesExibido, 1).getDay();
+  const totalDias = new Date(bloqAnoExibido, bloqMesExibido + 1, 0).getDate();
+
+  bloqDateGrid.innerHTML = '';
+
+  for (let i = 0; i < primeiroDiaSemana; i++) {
+    bloqDateGrid.appendChild(document.createElement('span'));
+  }
+
+  for (let dia = 1; dia <= totalDias; dia++) {
+    const dataCelula = new Date(bloqAnoExibido, bloqMesExibido, dia);
+    const diaSemana = dataCelula.getDay();
+    const fechado = DIAS_FECHADOS.includes(diaSemana);
+    const ehHoje = dataCelula.getTime() === hojeModal.getTime();
+    const iso = formatarISO(bloqAnoExibido, bloqMesExibido, dia);
+    const ehSelecionado = bloqDataSelecionada === iso;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'date-dia';
+    btn.textContent = dia;
+
+    if (ehHoje) btn.classList.add('hoje');
+    if (ehSelecionado) btn.classList.add('selecionado');
+
+    if (fechado) {
+      btn.disabled = true;
+      btn.classList.add('indisponivel');
+    } else {
+      btn.addEventListener('click', () => selecionarDiaBloqueio(iso));
+    }
+
+    bloqDateGrid.appendChild(btn);
+  }
+}
+
+async function selecionarDiaBloqueio(iso) {
+  bloqDataSelecionada = iso;
+  const [ano, mes, dia] = iso.split('-').map(Number);
+  bloqDataTexto.textContent = formatarBR(ano, mes - 1, dia);
+  bloqDataTexto.classList.add('preenchido');
+  bloqDatePopover.hidden = true;
+  bloqDataBtn.setAttribute('aria-expanded', 'false');
+  await carregarDiaBloqueio();
+}
+
+bloqDataBtn.addEventListener('click', () => {
+  if (bloqDatePopover.hidden) {
+    bloqDatePopover.hidden = false;
+    bloqDataBtn.setAttribute('aria-expanded', 'true');
+    renderizarCalendarioBloqueio();
+  } else {
+    bloqDatePopover.hidden = true;
+    bloqDataBtn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+bloqMesAnterior.addEventListener('click', () => {
+  bloqMesExibido -= 1;
+  if (bloqMesExibido < 0) {
+    bloqMesExibido = 11;
+    bloqAnoExibido -= 1;
+  }
+  renderizarCalendarioBloqueio();
+});
+
+bloqMesProximo.addEventListener('click', () => {
+  bloqMesExibido += 1;
+  if (bloqMesExibido > 11) {
+    bloqMesExibido = 0;
+    bloqAnoExibido += 1;
+  }
+  renderizarCalendarioBloqueio();
+});
+
+document.addEventListener('click', (evento) => {
+  if (!bloqDatePopover.hidden && !bloqDatePopover.contains(evento.target) && !bloqDataBtn.contains(evento.target)) {
+    bloqDatePopover.hidden = true;
+    bloqDataBtn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!modalBloqueioOverlay.hidden) fecharModalBloqueio();
+  if (!modalOverlay.hidden) fecharModal();
+});
+
+async function carregarDiaBloqueio() {
+  bloqSlotsContainer.innerHTML = '';
+  bloqSlotsMsg.textContent = 'Carregando...';
+  bloqSlotsMsg.style.display = 'block';
+  bloqFormMsg.className = 'form-msg';
+  bloqFormMsg.textContent = '';
+
+  try {
+    const resp = await fetch(`/api/admin/dia-horarios?data=${bloqDataSelecionada}`, {
+      headers: { 'x-admin-password': senhaAtual }
+    });
+    const dados = await resp.json();
+
+    if (!resp.ok) {
+      bloqSlotsMsg.textContent = dados.erro || 'Não foi possível carregar os horários.';
+      return;
+    }
+
+    bloqSlotsMsg.style.display = 'none';
+
+    dados.horarios.forEach((h) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = h.horario;
+
+      if (h.status === 'ocupado') {
+        btn.className = 'slot-btn ocupado-slot';
+        btn.title = `Ocupado — ${h.nome}`;
+        btn.disabled = true;
+      } else if (h.status === 'bloqueado') {
+        btn.className = 'slot-btn bloqueado-slot';
+        btn.title = 'Bloqueado — clique para liberar';
+        btn.addEventListener('click', () => desbloquearHorario(h.bloqueioId));
+      } else {
+        btn.className = 'slot-btn';
+        btn.title = 'Livre — clique para bloquear';
+        btn.addEventListener('click', () => bloquearHorario(h.horario));
+      }
+
+      bloqSlotsContainer.appendChild(btn);
+    });
+  } catch (erro) {
+    bloqSlotsMsg.textContent = 'Não foi possível carregar os horários.';
+  }
+}
+
+async function bloquearHorario(horario) {
+  try {
+    const resp = await fetch('/api/admin/bloqueios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': senhaAtual },
+      body: JSON.stringify({ data: bloqDataSelecionada, horario })
+    });
+    const dados = await resp.json();
+
+    if (!resp.ok) {
+      bloqFormMsg.className = 'form-msg erro';
+      bloqFormMsg.textContent = dados.erro || 'Não foi possível bloquear esse horário.';
+      return;
+    }
+
+    await carregarDiaBloqueio();
+  } catch (erro) {
+    bloqFormMsg.className = 'form-msg erro';
+    bloqFormMsg.textContent = 'Erro de conexão. Tente novamente.';
+  }
+}
+
+async function desbloquearHorario(bloqueioId) {
+  try {
+    await fetch(`/api/admin/bloqueios/${bloqueioId}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-password': senhaAtual }
+    });
+    await carregarDiaBloqueio();
+  } catch (erro) {
+    bloqFormMsg.className = 'form-msg erro';
+    bloqFormMsg.textContent = 'Erro de conexão. Tente novamente.';
+  }
+}
