@@ -6,17 +6,34 @@ const form = document.getElementById('formAgendamento');
 const formMsg = document.getElementById('formMsg');
 const btnEnviar = document.getElementById('btnEnviar');
 
+const resumoVazio = document.getElementById('resumoVazio');
+const resumoConteudo = document.getElementById('resumoConteudo');
+const resumoNome = document.getElementById('resumoNome');
+const resumoTagline = document.getElementById('resumoTagline');
+const resumoPrecoValor = document.getElementById('resumoPrecoValor');
+const resumoPrecoCentavos = document.getElementById('resumoPrecoCentavos');
+const resumoItens = document.getElementById('resumoItens');
+const resumoDuracao = document.getElementById('resumoDuracao');
+const resumoQuando = document.getElementById('resumoQuando');
+
 let horarioSelecionado = null;
+let servicosCache = [];
+
+const iconeCheckResumo = `
+  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M3 8.5L6.2 11.5L13 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+`;
 
 // ---------- Carrega os servicos no select ----------
 async function carregarServicosNoSelect() {
   try {
     const resp = await fetch('/api/servicos');
-    const servicos = await resp.json();
+    servicosCache = await resp.json();
 
     selectServico.innerHTML =
       '<option value="" disabled selected>Escolha um serviço</option>' +
-      servicos
+      servicosCache
         .map((s) => `<option value="${s.id}">${s.nome} — ${s.duracaoMin} min</option>`)
         .join('');
   } catch (erro) {
@@ -26,12 +43,57 @@ async function carregarServicosNoSelect() {
 
 carregarServicosNoSelect();
 
+selectServico.addEventListener('change', atualizarResumo);
+
+function formatarPrecoPartesResumo(valor) {
+  const partes = valor.toFixed(2).split('.');
+  return { inteiro: partes[0], centavos: partes[1] };
+}
+
+function atualizarResumo() {
+  const servico = servicosCache.find((s) => s.id === selectServico.value);
+
+  if (!servico) {
+    resumoVazio.hidden = false;
+    resumoConteudo.hidden = true;
+    return;
+  }
+
+  resumoVazio.hidden = true;
+  resumoConteudo.hidden = false;
+
+  resumoNome.textContent = servico.nome;
+  resumoTagline.textContent = servico.descricao || '';
+
+  const preco = formatarPrecoPartesResumo(servico.preco);
+  resumoPrecoValor.textContent = preco.inteiro;
+  resumoPrecoCentavos.textContent = `,${preco.centavos}`;
+
+  resumoItens.innerHTML = (servico.itens || [])
+    .map((item) => `<li>${iconeCheckResumo}<span>${item}</span></li>`)
+    .join('');
+
+  resumoDuracao.textContent = `~${servico.duracaoMin} min`;
+
+  atualizarResumoQuando();
+}
+
+function atualizarResumoQuando() {
+  if (!inputData.value || !horarioSelecionado) {
+    resumoQuando.textContent = 'A definir';
+    return;
+  }
+  const [ano, mes, dia] = inputData.value.split('-');
+  resumoQuando.textContent = `${dia}/${mes}/${ano} às ${horarioSelecionado}`;
+}
+
 // ---------- Busca horarios disponiveis quando a data muda ----------
 inputData.addEventListener('change', carregarHorarios);
 
 async function carregarHorarios() {
   horarioSelecionado = null;
   slotsContainer.innerHTML = '';
+  atualizarResumoQuando();
 
   const data = inputData.value;
   if (!data) {
@@ -76,6 +138,7 @@ function selecionarHorario(botaoClicado, horario) {
   document.querySelectorAll('.slot-btn').forEach((b) => b.classList.remove('selecionado'));
   botaoClicado.classList.add('selecionado');
   horarioSelecionado = horario;
+  atualizarResumoQuando();
 }
 
 // ---------- Envio do formulario ----------

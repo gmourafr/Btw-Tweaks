@@ -567,6 +567,17 @@ section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  position: relative;
+}
+
+.processo-linha {
+  position: absolute;
+  top: 47px;
+  left: calc(16.5% + 10px);
+  right: calc(16.5% + 10px);
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--border-strong) 0 6px, transparent 6px 12px);
+  z-index: 0;
 }
 
 .processo-item {
@@ -574,22 +585,54 @@ section {
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 26px 24px;
+  position: relative;
+  z-index: 1;
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .processo-item:hover {
   border-color: var(--blue);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(55, 138, 221, 0.14);
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(55, 138, 221, 0.18);
+}
+
+.processo-item:hover .processo-badge {
+  background: var(--blue);
+  color: #04101d;
+  box-shadow: 0 0 0 6px var(--blue-soft);
+}
+
+.processo-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .processo-num {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  background: var(--blue-deep);
+  color: #ffffff;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 34px;
-  color: var(--blue-deep);
-  display: block;
-  margin-bottom: 14px;
+  font-size: 11px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-elevated);
 }
 
 .processo-item h3 {
@@ -604,12 +647,145 @@ section {
 
 /* ---------- Agendamento ---------- */
 
+.agendamento-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
 .agendar-box {
   background: var(--bg-elevated);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
   padding: 36px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+
+.resumo-box {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 30px;
+  position: sticky;
+  top: 96px;
+}
+
+.resumo-eyebrow {
+  display: block;
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 22px;
+}
+
+.resumo-vazio {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--text-faint);
+}
+
+.resumo-vazio svg {
+  color: var(--border-strong);
+  margin-bottom: 14px;
+}
+
+.resumo-vazio p {
+  font-size: 13px;
+  color: var(--text-faint);
+  margin: 0;
+}
+
+.resumo-conteudo h3 {
+  font-size: 19px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.resumo-tagline {
+  font-size: 13px;
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
+.resumo-preco {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.resumo-preco-moeda {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--blue);
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.resumo-preco-valor {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 34px;
+  color: var(--text);
+  line-height: 1;
+}
+
+.resumo-preco-centavos {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.resumo-itens {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+.resumo-itens li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 6px 0;
+}
+
+.resumo-itens li svg {
+  flex-shrink: 0;
+  color: var(--blue);
+  margin-top: 2px;
+}
+
+.resumo-divisor {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 16px;
+}
+
+.resumo-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+.resumo-linha strong {
+  color: var(--text);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: right;
 }
 
 .campo {
@@ -975,12 +1151,21 @@ footer {
   .servicos-grid,
   .processo,
   .campo-grid,
-  .sobre-grid {
+  .sobre-grid,
+  .agendamento-layout {
     grid-template-columns: 1fr;
+  }
+
+  .resumo-box {
+    position: static;
   }
 
   .credenciais {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .processo-linha {
+    display: none;
   }
 
   .nav-links {

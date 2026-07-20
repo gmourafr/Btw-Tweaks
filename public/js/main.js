@@ -81,6 +81,7 @@ async function carregarServicosNaGrid() {
         const select = document.getElementById('servico');
         if (select && select.querySelector(`option[value="${link.dataset.servicoId}"]`)) {
           select.value = link.dataset.servicoId;
+          select.dispatchEvent(new Event('change'));
         }
       });
     });

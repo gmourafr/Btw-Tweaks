@@ -152,18 +152,40 @@
         <h2>Da reserva ao resultado, em três passos</h2>
       </div>
       <div class="processo">
+        <div class="processo-linha" aria-hidden="true"></div>
+
         <div class="processo-item">
-          <span class="processo-num">01</span>
+          <div class="processo-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M16.2 16.2L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M11 8.2V11L12.8 12.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="processo-num">01</span>
+          </div>
           <h3>Diagnóstico remoto</h3>
           <p>Conectamos via AnyDesk ou TeamViewer e mapeamos os gargalos do seu sistema antes de mexer em qualquer coisa.</p>
         </div>
+
         <div class="processo-item">
-          <span class="processo-num">02</span>
+          <div class="processo-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M14.7 3.3a4 4 0 0 0-5.4 4.6L3 14.2V18h3.8l6.3-6.3a4 4 0 0 0 4.6-5.4l-2.7 2.7-2-2 2.7-2.7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+            <span class="processo-num">02</span>
+          </div>
           <h3>Aplicação dos tweaks</h3>
           <p>Ajustamos Windows, drivers, energia e rede com base no diagnóstico — sempre explicando o que está sendo feito.</p>
         </div>
+
         <div class="processo-item">
-          <span class="processo-num">03</span>
+          <div class="processo-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M3 18V13M9 18V9M15 18V6M21 18V11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M4 8L9.5 4L15 7L20 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+            </svg>
+            <span class="processo-num">03</span>
+          </div>
           <h3>Validação dos resultados</h3>
           <p>Testamos junto com você no seu próprio jogo, comparando os números de antes e depois da sessão.</p>
         </div>
@@ -179,68 +201,107 @@
         <p>Escolha o serviço, a data e um horário disponível. Você recebe a confirmação na hora.</p>
       </div>
 
-      <div class="agendar-box">
-        <form id="formAgendamento" novalidate>
-          <div class="campo-grid">
-            <div class="campo">
-              <label for="servico">Serviço</label>
-              <select id="servico" name="servico" required>
-                <option value="" disabled selected>Carregando serviços...</option>
-              </select>
-            </div>
-            <div class="campo">
-              <label for="dataBtn">Data</label>
-              <div class="date-picker">
-                <button type="button" class="date-trigger" id="dataBtn" aria-haspopup="dialog" aria-expanded="false">
-                  <span id="dataTexto">Escolha uma data</span>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/>
-                    <path d="M2 6.5H14" stroke="currentColor" stroke-width="1.3"/>
-                    <path d="M5 1.5V4M11 1.5V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                  </svg>
-                </button>
-                <div class="date-popover" id="datePopover" hidden>
-                  <div class="date-popover-header">
-                    <button type="button" class="date-nav" id="mesAnterior" aria-label="Mês anterior">‹</button>
-                    <span id="mesAtualLabel"></span>
-                    <button type="button" class="date-nav" id="mesProximo" aria-label="Próximo mês">›</button>
-                  </div>
-                  <div class="date-grid-semana">
-                    <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-                  </div>
-                  <div class="date-grid" id="dateGrid"></div>
-                </div>
+      <div class="agendamento-layout">
+        <div class="agendar-box">
+          <form id="formAgendamento" novalidate>
+            <div class="campo-grid">
+              <div class="campo">
+                <label for="servico">Serviço</label>
+                <select id="servico" name="servico" required>
+                  <option value="" disabled selected>Carregando serviços...</option>
+                </select>
               </div>
-              <input type="hidden" id="data" name="data" required>
+              <div class="campo">
+                <label for="dataBtn">Data</label>
+                <div class="date-picker">
+                  <button type="button" class="date-trigger" id="dataBtn" aria-haspopup="dialog" aria-expanded="false">
+                    <span id="dataTexto">Escolha uma data</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/>
+                      <path d="M2 6.5H14" stroke="currentColor" stroke-width="1.3"/>
+                      <path d="M5 1.5V4M11 1.5V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                  <div class="date-popover" id="datePopover" hidden>
+                    <div class="date-popover-header">
+                      <button type="button" class="date-nav" id="mesAnterior" aria-label="Mês anterior">‹</button>
+                      <span id="mesAtualLabel"></span>
+                      <button type="button" class="date-nav" id="mesProximo" aria-label="Próximo mês">›</button>
+                    </div>
+                    <div class="date-grid-semana">
+                      <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                    </div>
+                    <div class="date-grid" id="dateGrid"></div>
+                  </div>
+                </div>
+                <input type="hidden" id="data" name="data" required>
+              </div>
             </div>
-          </div>
 
-          <div class="campo">
-            <label for="horarios">Horário</label>
-            <div class="slots" id="slotsContainer"></div>
-            <p class="slots-msg" id="slotsMsg">Selecione uma data para ver os horários disponíveis.</p>
-          </div>
-
-          <div class="campo-grid">
             <div class="campo">
-              <label for="nome">Nome</label>
-              <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+              <label for="horarios">Horário</label>
+              <div class="slots" id="slotsContainer"></div>
+              <p class="slots-msg" id="slotsMsg">Selecione uma data para ver os horários disponíveis.</p>
             </div>
+
+            <div class="campo-grid">
+              <div class="campo">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+              </div>
+              <div class="campo">
+                <label for="contato">WhatsApp ou Discord</label>
+                <input type="text" id="contato" name="contato" placeholder="@usuario ou (xx) xxxxx-xxxx" required>
+              </div>
+            </div>
+
             <div class="campo">
-              <label for="contato">WhatsApp ou Discord</label>
-              <input type="text" id="contato" name="contato" placeholder="@usuario ou (xx) xxxxx-xxxx" required>
+              <label for="observacoes">Observações (opcional)</label>
+              <textarea id="observacoes" name="observacoes" placeholder="Conte um pouco sobre o problema, jogos principais, specs do PC etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="btnEnviar">Confirmar agendamento</button>
+
+            <div class="form-msg" id="formMsg" role="status"></div>
+          </form>
+        </div>
+
+        <aside class="resumo-box" id="resumoBox">
+          <span class="resumo-eyebrow">Resumo da sessão</span>
+
+          <div class="resumo-vazio" id="resumoVazio">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M3 9H21" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M7 2.5V5.5M17 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <p>Escolha um serviço ao lado pra ver os detalhes aqui.</p>
+          </div>
+
+          <div class="resumo-conteudo" id="resumoConteudo" hidden>
+            <h3 id="resumoNome"></h3>
+            <p class="resumo-tagline" id="resumoTagline"></p>
+
+            <div class="resumo-preco">
+              <span class="resumo-preco-moeda">R$</span>
+              <span class="resumo-preco-valor" id="resumoPrecoValor"></span>
+              <span class="resumo-preco-centavos" id="resumoPrecoCentavos"></span>
+            </div>
+
+            <ul class="resumo-itens" id="resumoItens"></ul>
+
+            <div class="resumo-divisor"></div>
+
+            <div class="resumo-linha">
+              <span>Duração estimada</span>
+              <strong id="resumoDuracao">—</strong>
+            </div>
+            <div class="resumo-linha">
+              <span>Data e horário</span>
+              <strong id="resumoQuando">A definir</strong>
             </div>
           </div>
-
-          <div class="campo">
-            <label for="observacoes">Observações (opcional)</label>
-            <textarea id="observacoes" name="observacoes" placeholder="Conte um pouco sobre o problema, jogos principais, specs do PC etc."></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-primary" id="btnEnviar">Confirmar agendamento</button>
-
-          <div class="form-msg" id="formMsg" role="status"></div>
-        </form>
+        </aside>
       </div>
     </div>
   </section>
