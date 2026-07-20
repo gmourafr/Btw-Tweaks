@@ -9,7 +9,7 @@
       "Limpeza de bloatware",
       "Remoção de serviços desnecessários em segundo plano"
     ],
-    "duracaoMin": 60,
+    "duracaoMin": 30,
     "preco": 49.99,
     "destaque": false
   },
@@ -23,7 +23,7 @@
       "Configuração de rede",
       "Configs recomendadas para o seu jogo principal"
     ],
-    "duracaoMin": 90,
+    "duracaoMin": 60,
     "preco": 89.99,
     "destaque": true
   }

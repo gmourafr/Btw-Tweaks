@@ -392,8 +392,28 @@ header {
 
 .credencial-item:hover {
   border-color: var(--blue);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(55, 138, 221, 0.14);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(55, 138, 221, 0.18);
+}
+
+.credencial-item:hover .credencial-icone {
+  background: var(--blue);
+  color: #04101d;
+  box-shadow: 0 0 0 6px var(--blue-soft);
+}
+
+.credencial-icone {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .credencial-numero {
@@ -1206,6 +1226,27 @@ footer {
 
   .stat-before,
   .stat-after {
+    transition: none;
+  }
+}
+
+/* ---------- Animacao de entrada ao rolar a pagina ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visivel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
     transition: none;
   }
 }

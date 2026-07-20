@@ -91,3 +91,24 @@ async function carregarServicosNaGrid() {
 }
 
 carregarServicosNaGrid();
+
+// ---------- Animacao de entrada ao rolar ate a secao Quem Somos ----------
+const elementosReveal = document.querySelectorAll('.reveal');
+
+if (elementosReveal.length && !reduzMovimento) {
+  const observer = new IntersectionObserver(
+    (entradas) => {
+      entradas.forEach((entrada, indice) => {
+        if (entrada.isIntersecting) {
+          setTimeout(() => entrada.target.classList.add('visivel'), indice * 90);
+          observer.unobserve(entrada.target);
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+
+  elementosReveal.forEach((el) => observer.observe(el));
+} else {
+  elementosReveal.forEach((el) => el.classList.add('visivel'));
+}
