@@ -1,4 +1,4 @@
-# BTW Tweaks — site + agendamento
+# site + agendamento
 
 Site institucional com sistema de agendamento 100% funcional para a BTW Tweaks.
 
